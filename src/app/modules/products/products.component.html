@@ -1,0 +1,265 @@
+<div class="products-container">
+  <!-- Header -->
+  <div class="products-header">
+    <div class="header-content">
+      <h1 class="main-title">
+        <i class="pi pi-box"></i> Gestión de Productos
+      </h1>
+      <p class="subtitle">Agrega nuevos productos, categorías y personaliza tu inventario</p>
+    </div>
+  </div>
+
+  <!-- New Product Form -->
+  <div class="form-section">
+    <h2 class="form-title">
+      <i class="pi pi-plus"></i> Nuevo Producto
+    </h2>
+
+    <div class="form-grid-3col">
+      <!-- Configuration Section -->
+      <div class="form-column">
+        <h3 class="column-title">Configuración</h3>
+        <div class="checkbox-group">
+          <label class="checkbox-item">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="productForm.isClothing"
+              (ngModelChange)="onClothingToggle()">
+            <span class="checkbox-label">Es ropa</span>
+          </label>
+        </div>
+        <div class="checkbox-group">
+          <label class="checkbox-item">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="productForm.isConsigned"
+              (ngModelChange)="productForm.isConsigned = $event">
+            <span class="checkbox-label">Es consignado</span>
+          </label>
+        </div>
+
+        <!-- Consignment Code Input -->
+        <div *ngIf="productForm.isConsigned" class="form-group consignment-code">
+          <label class="form-label">Código de Consignación</label>
+          <input 
+            type="text" 
+            class="form-input"
+            [(ngModel)]="productForm.consignmentCode"
+            placeholder="Ej: CONS-001">
+        </div>
+      </div>
+
+      <!-- Basic Information Section -->
+      <div class="form-column">
+        <h3 class="column-title">Información Básica</h3>
+        <div class="form-group">
+          <label class="form-label">Nombre</label>
+          <input 
+            type="text" 
+            class="form-input"
+            [(ngModel)]="productForm.name"
+            placeholder="Nombre del producto">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Proveedor</label>
+          <input 
+            type="text" 
+            class="form-input"
+            [(ngModel)]="productForm.provider"
+            placeholder="Nombre del proveedor">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Foto</label>
+          <div class="file-upload-group">
+            <button class="file-upload-btn">
+              <i class="pi pi-fw pi-upload"></i> SELECCIONAR ARCHIVO
+            </button>
+            <span class="file-hint">Ningún archivo cargado</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Details Section -->
+      <div class="form-column">
+        <h3 class="column-title">Detalles</h3>
+        <div class="form-group">
+          <label class="form-label">Descripción</label>
+          <textarea 
+            class="form-textarea"
+            [(ngModel)]="productForm.description"
+            placeholder="Descripción del producto"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Personaje</label>
+          <input 
+            type="text" 
+            class="form-input"
+            [(ngModel)]="productForm.character"
+            placeholder="Ej: Naruto, Goku, etc">
+        </div>
+      </div>
+    </div>
+
+    <!-- Categories Section -->
+    <div class="tags-section">
+      <h3 class="section-title">
+        <i class="pi pi-fw pi-tag"></i> Categorías
+      </h3>
+      <div class="tags-container">
+        <button 
+          *ngFor="let category of categories"
+          class="tag-btn category-tag"
+          [class.active]="isCategorySelected(category.id)"
+          (click)="toggleCategory(category.id)">
+          {{ category.label }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Tags Section -->
+    <div class="tags-section">
+      <h3 class="section-title">
+        <i class="pi pi-fw pi-star"></i> Tags
+      </h3>
+      <div class="tags-container">
+        <button 
+          *ngFor="let tag of tags"
+          class="tag-btn"
+          [class.active]="isTagSelected(tag.id)"
+          (click)="toggleTag(tag.id)">
+          {{ tag.label }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Prices Section -->
+    <div class="prices-section">
+      <h3 class="section-title">
+        <i class="pi pi-fw pi-dollar"></i> Precios
+      </h3>
+      <div class="prices-grid">
+        <div class="form-group">
+          <label class="form-label">Costo</label>
+          <div class="input-prefix">
+            <span class="prefix">Q</span>
+            <input 
+              type="number" 
+              class="form-input"
+              [(ngModel)]="productForm.cost"
+              placeholder="0.00"
+              step="0.01">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Precio</label>
+          <div class="input-prefix">
+            <span class="prefix">Q</span>
+            <input 
+              type="number" 
+              class="form-input"
+              [(ngModel)]="productForm.price"
+              placeholder="0.00"
+              step="0.01">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cantidad</label>
+          <input 
+            type="number" 
+            class="form-input"
+            [ngModel]="productForm.isClothing ? getTotalClothingQuantity() : productForm.quantity"
+            (ngModelChange)="productForm.quantity = $event"
+            [disabled]="productForm.isClothing"
+            placeholder="0"
+            min="0">
+          <small *ngIf="productForm.isClothing" class="help-text">Se calcula automáticamente desde las tallas</small>
+        </div>
+      </div>
+
+      <!-- Price Summary -->
+      <div class="price-summary">
+        <div class="summary-item">
+          <span class="summary-label">Margen de Ganancia:</span>
+          <span class="summary-value">Q {{ getProfitMargin() | number: '1.2-2' }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Valor Total:</span>
+          <span class="summary-value">Q {{ getTotalProductValue() | number: '1.2-2' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sizes Section (if clothing) -->
+    <div *ngIf="productForm.isClothing" class="sizes-section">
+      <h3 class="section-title">
+        <i class="pi pi-fw pi-inbox"></i> Tallas Disponibles
+      </h3>
+      <div class="sizes-grid">
+        <div *ngFor="let size of productForm.sizes" class="size-item">
+          <label class="size-label">{{ size.size }}</label>
+          <input 
+            type="number" 
+            class="size-input"
+            [(ngModel)]="size.quantity"
+            placeholder="0"
+            min="0">
+        </div>
+      </div>
+      <div class="sizes-summary">
+        <span class="summary-label">Total de Unidades:</span>
+        <span class="summary-value">{{ getTotalClothingQuantity() }} unidades</span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button 
+        class="btn-secondary"
+        (click)="resetForm()">
+        <i class="pi pi-fw pi-refresh"></i> Limpiar Formulario
+      </button>
+      <button 
+        class="btn-secondary"
+        (click)="saveAndAddMore()"
+        [disabled]="isLoading">
+        <i class="pi" [ngClass]="isLoading ? 'pi-spin pi-spinner' : 'pi-fw pi-plus-circle'"></i>
+        {{ isLoading ? 'Guardando...' : 'Agregar Más' }}
+      </button>
+      <button 
+        class="btn-primary"
+        (click)="saveProduct()"
+        [disabled]="isLoading">
+        <i class="pi" [ngClass]="isLoading ? 'pi-spin pi-spinner' : 'pi-fw pi-save'"></i>
+        {{ isLoading ? 'Guardando...' : 'Guardar Producto' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Product List Summary -->
+  <div *ngIf="productList.length > 0" class="product-summary-section">
+    <h2 class="summary-title">
+      <i class="pi pi-fw pi-list"></i> Productos Agregados ({{ productList.length }})
+    </h2>
+    <div class="products-list">
+      <div *ngFor="let product of productList" class="product-item">
+        <div class="product-info">
+          <h4>{{ product.name }}</h4>
+          <p class="product-provider">Proveedor: {{ product.provider }}</p>
+          <p class="product-price">Precio: <strong>Q {{ product.price | number: '1.2-2' }}</strong></p>
+        </div>
+        <div class="product-meta">
+          <span class="product-qty">{{ product.quantity }} unidades</span>
+          <span *ngIf="product.isClothing" class="badge clothing">Ropa</span>
+          <span *ngIf="product.isConsigned" class="badge consigned">Consignado</span>
+        </div>
+      </div>
+    </div>
+    <button 
+      class="btn-save-all"
+      (click)="saveAll()"
+      [disabled]="isLoading">
+      <i class="pi" [ngClass]="isLoading ? 'pi-spin pi-spinner' : 'pi-fw pi-check'"></i>
+      {{ isLoading ? 'Guardando...' : 'Guardar Todo' }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,165 @@
+<div class="pending-container">
+  <!-- Modal -->
+  <app-pending-modal 
+    [isOpen]="isModalOpen"
+    (close)="closeModal()"
+    (save)="onSaveNewPending($event)">
+  </app-pending-modal>
+  <!-- Header -->
+  <div class="pending-header">
+    <div class="header-content">
+      <div class="header-title">
+        <i class="pi pi-fw pi-clipboard"></i>
+        <div>
+          <h1>Pendientes</h1>
+          <p class="subtitle">Tareas y pedidos</p>
+        </div>
+      </div>
+      <button class="btn-new-pending" (click)="addNewPending()">
+        <i class="pi pi-plus"></i> Nuevo Pendiente
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters/Tabs -->
+  <div class="filter-tabs">
+    <button 
+      *ngFor="let tab of filterTabs"
+      class="filter-tab"
+      [class.active]="currentFilter === tab.key"
+      (click)="applyFilter(tab.key)">
+      <i class="pi" [ngClass]="'pi-' + tab.icon.split('-')[1]"></i>
+      <span>{{ tab.label }}</span>
+      <span class="count" *ngIf="tab.count > 0">{{ tab.count }}</span>
+    </button>
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="summary-stats" *ngIf="filteredItems.length > 0">
+    <div class="stat-card">
+      <label>Total Cobrado</label>
+      <p class="stat-value">Q{{ getTotalAmount().toFixed(2) }}</p>
+    </div>
+    <div class="stat-card">
+      <label>Total Gasto</label>
+      <p class="stat-value">Q{{ getTotalCost().toFixed(2) }}</p>
+    </div>
+    <div class="stat-card profit">
+      <label>Ganancia</label>
+      <p class="stat-value">Q{{ getTotalProfit().toFixed(2) }}</p>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-section" *ngIf="filteredItems.length > 0; else emptyState">
+    <div class="table-wrapper">
+      <table class="pending-table">
+        <thead>
+          <tr>
+            <th class="col-client">
+              <i class="pi pi-user"></i> Cliente
+            </th>
+            <th class="col-title">
+              <i class="pi pi-tag"></i> Título
+            </th>
+            <th class="col-details">
+              <i class="pi pi-info-circle"></i> Detalle
+            </th>
+            <th class="col-amount">
+              <i class="pi pi-dollar"></i> Cobro
+            </th>
+            <th class="col-cost">
+              <i class="pi pi-shopping-bag"></i> Gasto
+            </th>
+            <th class="col-status">
+              <i class="pi pi-check-circle"></i> Estado
+            </th>
+            <th class="col-qty">
+              <i class="pi pi-hashtag"></i> Cant.
+            </th>
+            <th class="col-actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of filteredItems" class="pending-row" [class.completed]="item.status === 'completed'">
+            <!-- Cliente -->
+            <td class="col-client">
+              <div class="client-info">
+                <div class="client-avatar">{{ item.clientInitial }}</div>
+                <span>{{ item.client }}</span>
+              </div>
+            </td>
+
+            <!-- Título -->
+            <td class="col-title">
+              <strong>{{ item.title }}</strong>
+            </td>
+
+            <!-- Detalle -->
+            <td class="col-details">
+              <small>{{ item.details }}</small>
+            </td>
+
+            <!-- Cobro -->
+            <td class="col-amount">
+              <div class="amount-box">Q{{ item.amount.toFixed(2) }}</div>
+            </td>
+
+            <!-- Gasto -->
+            <td class="col-cost">
+              <span class="cost-value">Q{{ item.cost.toFixed(2) }}</span>
+            </td>
+
+            <!-- Estado -->
+            <td class="col-status">
+              <div class="status-selector">
+                <select 
+                  [(ngModel)]="item.status"
+                  (change)="updateStatus(item, item.status)"
+                  class="status-select">
+                  <option value="pending">Pendiente</option>
+                  <option value="in_process">En Proceso</option>
+                  <option value="completed">Realizado</option>
+                </select>
+                <div class="status-badge" [ngClass]="'status-' + item.status">
+                  {{ getPaymentMethodLabel(item.paymentMethod) }}
+                </div>
+              </div>
+            </td>
+
+            <!-- Cantidad -->
+            <td class="col-qty">
+              <div class="qty-input-group">
+                <button class="qty-btn">Q</button>
+                <input 
+                  type="number" 
+                  [(ngModel)]="item.quantity"
+                  (change)="updateQuantity(item, item.quantity)"
+                  min="1"
+                  class="qty-input">
+              </div>
+            </td>
+
+            <!-- Acciones -->
+            <td class="col-actions">
+              <button class="btn-delete" (click)="deletePending(item)" title="Eliminar">
+                <i class="pi pi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <ng-template #emptyState>
+    <div class="empty-state">
+      <i class="pi pi-inbox"></i>
+      <p>No hay pendientes en esta categoría</p>
+      <button class="btn-add-first" (click)="addNewPending()">
+        <i class="pi pi-plus"></i> Crear Pendiente
+      </button>
+    </div>
+  </ng-template>
+</div>

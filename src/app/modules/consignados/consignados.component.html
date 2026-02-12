@@ -1,0 +1,112 @@
+<div class="consignados-container">
+  <!-- Header Section -->
+  <div class="consignados-header">
+    <div class="header-content">
+      <h1 class="main-title">
+        <i class="pi pi-inbox"></i> Gestión de Consignados
+      </h1>
+      <p class="subtitle">Monitorea el inventario en consignación por cliente y categoría</p>
+    </div>
+  </div>
+
+  <!-- Categories Grid -->
+  <div class="categories-section">
+    <h2 class="section-title">Productos en Consignación</h2>
+    <div class="categories-grid">
+      <div *ngFor="let category of categories" class="category-card" [style.--card-color]="category.color">
+        <div class="card-header">
+          <div class="category-info">
+            <i [ngClass]="'pi pi-fw ' + category.icon"></i>
+            <h3>{{ category.name }}</h3>
+          </div>
+          <button 
+            class="close-btn" 
+            title="Cerrar consignación"
+            (click)="closeCategory(category)">
+            <i class="pi pi-fw pi-times"></i>
+          </button>
+        </div>
+
+        <div class="card-stats">
+          <div class="stat-item">
+            <span class="stat-label">Total Inventario</span>
+            <span class="stat-value total">Q {{ category.total | number: '1.2-2' }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Por Cobrar</span>
+            <span class="stat-value pending">Q {{ category.pending | number: '1.2-2' }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Ganancia Estimada</span>
+            <span class="stat-value earned">Q {{ category.earned | number: '1.2-2' }}</span>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span class="product-count">
+            <i class="pi pi-box"></i> {{ category.productCount }} unidades
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total General Section -->
+  <div class="total-general-section">
+    <div class="total-general-card">
+      <div class="total-header">
+        <i class="pi pi-fw pi-calculator"></i>
+        <h2>Resumen General de Consignaciones</h2>
+      </div>
+
+      <div class="total-stats">
+        <div class="total-item">
+          <span class="total-label">Total General</span>
+          <span class="total-amount">Q {{ getTotalGeneral() | number: '1.2-2' }}</span>
+        </div>
+        <div class="divider"></div>
+        <div class="total-item">
+          <span class="total-label">Monto Por Cobrar</span>
+          <span class="total-amount pending">Q {{ getTotalPendingGeneral() | number: '1.2-2' }}</span>
+        </div>
+        <div class="divider"></div>
+        <div class="total-item">
+          <span class="total-label">Ganancia Acumulada</span>
+          <span class="total-amount earned">Q {{ getTotalEarnedGeneral() | number: '1.2-2' }}</span>
+        </div>
+      </div>
+
+      <div class="product-summary">
+        <span><i class="pi pi-box"></i> Total {{ getTotalProductCount() }} productos en consignación</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <h3 class="filter-title">
+      <i class="pi pi-filter"></i> Filtrar Consignaciones
+    </h3>
+    <div class="filter-buttons">
+      <button 
+        *ngFor="let option of consignmentOptions"
+        class="filter-btn"
+        [class.active]="selectedConsignment === option.id"
+        (click)="selectConsignment(option.id)">
+        <i [ngClass]="'pi pi-fw ' + option.icon"></i>
+        {{ option.label }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Export Section -->
+  <div class="export-section">
+    <button 
+      class="export-btn"
+      [disabled]="isLoading"
+      (click)="exportToExcel()">
+      <i class="pi" [ngClass]="isLoading ? 'pi-spin pi-spinner' : 'pi-file-excel'"></i>
+      {{ isLoading ? 'Exportando...' : 'Exportar a Excel' }}
+    </button>
+  </div>
+</div>

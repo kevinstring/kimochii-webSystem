@@ -1,0 +1,41 @@
+<div class="layout-container">
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="navbar-content">
+      <button class="menu-btn" (click)="toggleSidebar()">
+        <i class="pi pi-bars"></i>
+      </button>
+      <h1 class="navbar-title">Kimochii - Control de Inventario</h1>
+      <div class="navbar-spacer"></div>
+      <div class="user-section" *ngIf="currentUser$ | async as user">
+        <span class="user-name">{{ user.name }}</span>
+        <button class="logout-btn" (click)="logout()" title="Cerrar sesión">
+          <i class="pi pi-sign-out"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay (mobile) -->
+  <div class="sidebar-overlay" [class.visible]="sidebarVisible" (click)="toggleSidebar()"></div>
+
+  <div class="layout-body">
+    <!-- Sidebar -->
+    <div class="sidebar" [class.collapsed]="!sidebarVisible">
+      <nav class="menu">
+        <a *ngFor="let item of menuItems" 
+           [routerLink]="item.routerLink"
+           routerLinkActive="active"
+           class="menu-item">
+          <i [class]="item.icon"></i>
+          <span>{{ item.label }}</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

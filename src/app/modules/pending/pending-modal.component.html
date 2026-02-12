@@ -1,0 +1,155 @@
+<div class="modal-overlay" [class.active]="isOpen" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h2>
+        <i class="pi pi-plus"></i>
+        Nuevo Pendiente
+      </h2>
+      <button class="close-btn" (click)="closeModal()">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <!-- Información del Cliente -->
+      <section class="form-section">
+        <h3>Información del Cliente</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre del Cliente</label>
+            <input 
+              type="text" 
+              [(ngModel)]="clientName"
+              placeholder="Ej. Juan Pérez"
+              class="form-input">
+          </div>
+          <div class="form-group">
+            <label>Número de Teléfono</label>
+            <input 
+              type="tel" 
+              [(ngModel)]="clientPhone"
+              placeholder="0000-0000"
+              class="form-input">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Título del Pedido</label>
+            <input 
+              type="text" 
+              [(ngModel)]="title"
+              placeholder="Ej. Pedido urgente"
+              class="form-input">
+          </div>
+          <div class="form-group">
+            <label>Fecha Aproximada de Entrega</label>
+            <input 
+              type="date" 
+              [(ngModel)]="deliveryDate"
+              class="form-input">
+          </div>
+        </div>
+      </section>
+
+      <!-- Agregar Productos -->
+      <section class="form-section">
+        <h3>Agregar Productos</h3>
+        <div class="search-group">
+          <input 
+            type="text" 
+            [(ngModel)]="productCode"
+            (keypress)="handleKeyPress($event)"
+            placeholder="Escanea o ingresa el código del producto"
+            class="form-input search-input">
+          <button class="btn-search" (click)="searchProduct()">
+            <i class="pi pi-search"></i> Buscar
+          </button>
+        </div>
+
+        <!-- Products Table -->
+        <div class="products-section">
+          <table class="products-table" *ngIf="products.length > 0; else emptyProducts">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+                <th>Total</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let product of products; let i = index">
+                <td class="code">{{ product.code }}</td>
+                <td class="name">{{ product.name }}</td>
+                <td class="price">Q{{ product.price.toFixed(2) }}</td>
+                <td class="quantity">
+                  <input 
+                    type="number" 
+                    [(ngModel)]="product.quantity"
+                    (change)="updateQuantity(i, product.quantity)"
+                    min="1"
+                    class="qty-input">
+                </td>
+                <td class="total">Q{{ (product.price * product.quantity).toFixed(2) }}</td>
+                <td class="action">
+                  <button class="btn-remove" (click)="removeProduct(i)">
+                    <i class="pi pi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <ng-template #emptyProducts>
+            <div class="empty-products">
+              <i class="pi pi-shopping-cart"></i>
+              <p>No hay productos agregados</p>
+              <small>Busca y agrega productos usando el código de barras</small>
+            </div>
+          </ng-template>
+        </div>
+      </section>
+
+      <!-- Detalles Adicionales -->
+      <section class="form-section">
+        <h3>Detalles Adicionales</h3>
+        
+        <div class="form-group">
+          <label>Observaciones del Pedido</label>
+          <textarea 
+            [(ngModel)]="observations"
+            placeholder="Agrega cualquier detalle importante sobre el pedido..."
+            class="form-textarea"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Monto Total a Cobrar</label>
+          <div class="amount-input-group">
+            <div class="amount-label">Q</div>
+            <input 
+              type="number" 
+              [(ngModel)]="totalAmount"
+              class="form-input amount-input"
+              placeholder="0.00">
+          </div>
+          <small class="hint">Puede ser diferente al total calculado</small>
+        </div>
+      </section>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="clearAll()">
+        <i class="pi pi-refresh"></i> Limpiar Todo
+      </button>
+      <button class="btn-primary" (click)="savePending()">
+        <i class="pi pi-check"></i> Guardar Pedido
+      </button>
+    </div>
+  </div>
+</div>

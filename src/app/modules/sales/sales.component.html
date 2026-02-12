@@ -1,0 +1,89 @@
+<div class="sales-container">
+  <h1>Registrar Venta</h1>
+
+  <div class="form-section">
+    <div class="form-card">
+      <h2>Ingresa Código de Producto</h2>
+      
+      <div class="form-row">
+        <div class="form-group search-group">
+          <label>Código de Producto</label>
+          <input 
+            type="text" 
+            [(ngModel)]="productCode"
+            (keyup.enter)="searchProduct()"
+            placeholder="Ej: SUB001"
+            class="form-input"
+            autofocus>
+          <small class="hint">Presiona ENTER para agregar</small>
+        </div>
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">
+        <i class="pi pi-exclamation-circle"></i> {{ errorMessage }}
+      </div>
+    </div>
+  </div>
+
+  <div class="table-section" *ngIf="salesItems.length > 0">
+    <table class="sales-table">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Precio Unit.</th>
+          <th>Total</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of salesItems; let i = index">
+          <td>{{ item.code }}</td>
+          <td>{{ item.product }}</td>
+          <td class="quantity-cell">
+            <input 
+              type="number" 
+              [(ngModel)]="item.quantity"
+              (change)="updateQuantity(i, item.quantity)"
+              min="1"
+              class="qty-input">
+          </td>
+          <td>Q{{ item.unitPrice.toFixed(2) }}</td>
+          <td><strong>Q{{ item.total.toFixed(2) }}</strong></td>
+          <td>
+            <button (click)="removeItem(i)" class="btn-remove" title="Eliminar">
+              <i class="pi pi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="total-payment-row">
+      <div class="total-summary">
+        <h3>Total Venta: <span>Q{{ totalSale.toFixed(2) }}</span></h3>
+      </div>
+
+      <div class="payment-method-section">
+        <label>Método de Pago</label>
+        <select [(ngModel)]="paymentMethod" class="payment-select">
+          <option *ngFor="let method of paymentMethods" [value]="method.id">
+            {{ method.label }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <button (click)="completeSale()" class="btn-complete" [disabled]="isLoading">
+      <i class="pi" [ngClass]="isLoading ? 'pi-spin pi-spinner' : 'pi-check'"></i>
+      {{ isLoading ? 'Procesando...' : 'Completar Venta' }}
+    </button>
+  </div>
+
+  <div class="empty-state" *ngIf="salesItems.length === 0">
+    <i class="pi pi-inbox"></i>
+    <p>Ingresa códigos de productos para comenzar la venta</p>
+  </div>
+</div>
+

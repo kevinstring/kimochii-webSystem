@@ -1,0 +1,645 @@
+.sales-container {
+  padding: 0.75rem 0;
+}
+
+h1 {
+  margin: 0 0 0.75rem 0;
+  color: #333;
+  font-size: 2rem;
+}
+
+h2 {
+  margin: 0 0 0.75rem 0;
+  color: #444;
+  font-size: 1.2rem;
+}
+
+h3 {
+  margin: 0;
+  color: #555;
+}
+
+/* Form Section */
+.form-section {
+  margin-bottom: 0.75rem;
+}
+
+.form-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-group {
+  flex: 0 1 300px;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.form-input {
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.hint {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #999;
+}
+
+/* Error Message */
+.error-message {
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: #fee;
+  border-left: 4px solid #ff6b6b;
+  border-radius: 4px;
+  color: #d73a49;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.error-message i {
+  font-size: 1.1rem;
+}
+
+/* Quantity Input */
+.qty-input {
+  width: 60px;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.qty-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* Table Section */
+.table-section {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 0.75rem;
+}
+
+.sales-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.75rem;
+}
+
+.sales-table thead {
+  background-color: #f8f9fa;
+}
+
+.sales-table th {
+  padding: 1rem;
+  text-align: left;
+  color: #555;
+  font-weight: 600;
+  border-bottom: 2px solid #e0e0e0;
+  font-size: 0.9rem;
+}
+
+.sales-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.quantity-cell {
+  text-align: center;
+}
+
+.sales-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* Buttons */
+.btn-remove {
+  padding: 0.5rem;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-remove:hover {
+  background: #ff5252;
+}
+
+.btn-complete {
+  padding: 0.75rem 2rem !important;
+  background: #0073e6 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+  margin-top: 0.5rem !important;
+}
+
+.btn-complete:hover {
+  transform: translateY(-2px);
+  background: #0052a3;
+  box-shadow: 0 4px 12px rgba(0, 115, 230, 0.4);
+}
+
+/* Total and Payment Row */
+.total-payment-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  align-items: flex-end;
+}
+
+/* Total Summary */
+.total-summary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: right;
+}
+
+.total-summary h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.total-summary span {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+/* Payment Method Section */
+.payment-method-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.payment-method-section label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #667eea;
+  letter-spacing: 0.5px;
+}
+
+.payment-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 20px;
+  padding-right: 40px;
+}
+
+.payment-select:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.payment-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.payment-select option {
+  padding: 8px;
+  background: white;
+  color: #333;
+}
+
+/* Empty State */
+.empty-state {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 0.75rem;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  color: #ccc;
+  margin-bottom: 0.75rem;
+}
+
+.empty-state p {
+  color: #999;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .sales-container {
+    padding: 0.75rem 0;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  h2 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .form-card {
+    padding: 1rem;
+  }
+
+  .table-section {
+    padding: 1rem;
+  }
+
+  .sales-table th,
+  .sales-table td {
+    padding: 0.6rem;
+  }
+
+  .total-payment-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .total-summary {
+    padding: 0.75rem;
+  }
+
+  .total-summary h3 {
+    font-size: 1.2rem;
+  }
+
+  .total-summary span {
+    font-size: 1.5rem;
+  }
+
+  .payment-select {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sales-container {
+    padding: 0.5rem 0;
+  }
+
+  h1 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h2 {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-section {
+    margin-bottom: 0.75rem;
+  }
+
+  .form-card {
+    padding: 0.75rem;
+    border-radius: 6px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .form-group {
+    min-width: unset;
+  }
+
+  .search-group {
+    flex: 1;
+    min-width: 100%;
+  }
+
+  .form-group label {
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .form-input {
+    padding: 0.6rem;
+    font-size: 0.95rem;
+  }
+
+  .table-section {
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .sales-table {
+    font-size: 0.8rem;
+  }
+
+  .sales-table th,
+  .sales-table td {
+    padding: 0.6rem 0.4rem;
+  }
+
+  .sales-table th {
+    font-size: 0.75rem;
+  }
+
+  .qty-input {
+    width: 50px;
+    padding: 0.4rem;
+  }
+
+  .btn-remove {
+    padding: 0.4rem;
+    font-size: 0.8rem;
+  }
+
+  .total-payment-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    align-items: flex-end;
+  }
+
+  .total-summary {
+    padding: 0.75rem;
+    text-align: center;
+  }
+
+  .total-summary h3 {
+    font-size: 0.9rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .total-summary span {
+    font-size: 1.3rem;
+  }
+
+  .payment-method-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .payment-method-section label {
+    font-size: 0.8rem;
+  }
+
+  .payment-select {
+    padding: 8px 12px;
+    font-size: 12px;
+    padding-right: 32px;
+  }
+
+  .btn-complete {
+    width: 100% !important;
+    justify-content: center !important;
+    font-size: 0.95rem !important;
+    padding: 0.6rem 1.5rem !important;
+  }
+
+  .empty-state {
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .empty-state p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sales-container {
+    padding: 0.75rem 0;
+  }
+
+  h1 {
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+  }
+
+  h2 {
+    font-size: 0.85rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .form-section {
+    margin-bottom: 1.2rem;
+  }
+
+  .form-card {
+    padding: 0.8rem;
+    border-radius: 6px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .search-group {
+    min-width: 100%;
+  }
+
+  .form-group label {
+    font-size: 0.75rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .form-input {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+  }
+
+  .hint {
+    font-size: 0.65rem;
+    margin-top: 0.2rem;
+  }
+
+  .table-section {
+    padding: 0.8rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .sales-table {
+    font-size: 0.7rem;
+    display: block;
+    overflow-x: auto;
+  }
+
+  .sales-table thead {
+    font-size: 0.65rem;
+  }
+
+  .sales-table th,
+  .sales-table td {
+    padding: 0.4rem 0.3rem;
+  }
+
+  .sales-table th {
+    font-size: 0.65rem;
+    padding: 0.4rem;
+  }
+
+  .quantity-cell {
+    text-align: center;
+  }
+
+  .qty-input {
+    width: 45px;
+    padding: 0.3rem;
+    font-size: 0.8rem;
+  }
+
+  .btn-remove {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+  }
+
+  .total-payment-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .total-summary {
+    padding: 0.75rem;
+    text-align: center;
+  }
+
+  .total-summary h3 {
+    font-size: 0.8rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .total-summary span {
+    font-size: 1.2rem;
+  }
+
+  .payment-method-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .payment-method-section label {
+    font-size: 0.75rem;
+  }
+
+  .payment-select {
+    padding: 8px 10px;
+    font-size: 11px;
+    padding-right: 28px;
+    background-size: 14px;
+  }
+
+  .btn-complete {
+    width: 100% !important;
+    justify-content: center !important;
+    font-size: 0.85rem !important;
+    padding: 0.5rem 1rem !important;
+    gap: 0.4rem !important;
+  }
+
+  .empty-state {
+    padding: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-state i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-state p {
+    font-size: 0.8rem;
+  }
+
+  /* Make table scrollable on ultra-small screens */
+  .sales-table {
+    min-width: 100%;
+  }
+
+  .sales-table tbody tr {
+    display: inline-block;
+    width: 100%;
+  }
+}

@@ -1,0 +1,117 @@
+<div class="dashboard-container">
+  <h1>Dashboard</h1>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div 
+      *ngFor="let stat of stats" 
+      class="stat-card"
+      [style.borderLeftColor]="stat.color">
+      <div class="stat-icon" [style.color]="stat.color">
+        <i [class]="stat.icon"></i>
+      </div>
+      <div class="stat-content">
+        <p class="stat-title">{{ stat.title }}</p>
+        <p class="stat-value">{{ stat.value }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sales by Period Section -->
+  <div class="sales-period-section">
+    <h2>Ventas Por Período</h2>
+    <div class="sales-grid">
+      <div 
+        *ngFor="let sale of salesByPeriod" 
+        (click)="openModal(sale.key)"
+        class="sales-card clickable"
+        [style.borderTopColor]="sale.color">
+        <div class="sales-header">
+          <div class="sales-icon" [style.color]="sale.color">
+            <i [class]="sale.icon"></i>
+          </div>
+          <p class="sales-period">{{ sale.period }}</p>
+        </div>
+        <div class="sales-detail">
+          <p class="sales-total">{{ sale.total }}</p>
+          <p class="sales-transactions">{{ sale.transactions }} transacciones</p>
+        </div>
+        <p class="click-hint">Ver detalles</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Placeholder for charts -->
+  <div class="charts-section">
+    <div class="chart-card">
+      <div class="card-header">
+        <h2>Movimiento de Inventario</h2>
+      </div>
+      <div class="chart-placeholder">
+        <p>Los gráficos se integrarán aquí</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Overlay -->
+<div class="modal-overlay" *ngIf="modalOpen" (click)="closeModal()"></div>
+
+<!-- Modal -->
+<div class="modal" *ngIf="modalOpen">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Ventas: {{ getPeriodLabel() }}</h2>
+      <button class="close-btn" (click)="closeModal()">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Summary -->
+      <div class="modal-summary">
+        <div class="summary-item">
+          <p class="summary-label">Total</p>
+          <p class="summary-value">Q{{ filteredTotal.toFixed(2) }}</p>
+        </div>
+        <div class="summary-item">
+          <p class="summary-label">Transacciones</p>
+          <p class="summary-value">{{ filteredSales.length }}</p>
+        </div>
+        <div class="summary-item">
+          <p class="summary-label">Promedio</p>
+          <p class="summary-value">Q{{ (filteredSales.length > 0 ? filteredTotal / filteredSales.length : 0).toFixed(2) }}</p>
+        </div>
+      </div>
+
+      <!-- Sales Table -->
+      <table class="modal-table" *ngIf="filteredSales.length > 0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Usuario</th>
+            <th>Productos</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let sale of filteredSales">
+            <td class="sale-id">{{ sale.id }}</td>
+            <td>{{ sale.date }}</td>
+            <td>{{ sale.time }}</td>
+            <td class="user-name">{{ sale.userName }}</td>
+            <td class="items-count">{{ sale.items }}</td>
+            <td class="total-amount">Q{{ sale.total.toFixed(2) }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="empty-state" *ngIf="filteredSales.length === 0">
+        <i class="pi pi-inbox"></i>
+        <p>No hay ventas en este período</p>
+      </div>
+    </div>
+  </div>
+</div>
