@@ -61,7 +61,7 @@
           <input 
             type="text" 
             [(ngModel)]="productCode"
-            (keypress)="handleKeyPress($event)"
+            (keydown.enter)="handleKeyPress()"
             placeholder="Escanea o ingresa el código del producto"
             class="form-input search-input">
           <button class="btn-search" (click)="searchProduct()">
@@ -84,9 +84,9 @@
             </thead>
             <tbody>
               <tr *ngFor="let product of products; let i = index">
-                <td class="code">{{ product.code }}</td>
-                <td class="name">{{ product.name }}</td>
-                <td class="price">Q{{ product.price.toFixed(2) }}</td>
+                <td class="code">{{ product.CODIGO }}</td>
+                <td class="name">{{ product.NOMBRE }}</td>
+                <td class="price">Q{{ product.PRECIO.toFixed(2) }}</td>
                 <td class="quantity">
                   <input 
                     type="number" 
@@ -95,7 +95,7 @@
                     min="1"
                     class="qty-input">
                 </td>
-                <td class="total">Q{{ (product.price * product.quantity).toFixed(2) }}</td>
+                <td class="total">Q{{ (product.PRECIO * product.quantity).toFixed(2) }}</td>
                 <td class="action">
                   <button class="btn-remove" (click)="removeProduct(i)">
                     <i class="pi pi-trash"></i>

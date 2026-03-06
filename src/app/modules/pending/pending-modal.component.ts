@@ -1,12 +1,13 @@
 import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NotificationService } from '../../services/notification.service';
+import { SalesService } from '../../services/sales.service';
 
 interface Product {
-  code: string;
-  name: string;
-  price: number;
+  CODIGO: string;
+  NOMBRE: string;
+  PRECIO: number;
   quantity: number;
 }
 
@@ -23,7 +24,7 @@ interface NewPendingData {
 @Component({
   selector: 'app-pending-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './pending-modal.component.html',
   styleUrl: './pending-modal.component.css'
 })
@@ -42,19 +43,9 @@ export class PendingModalComponent {
   totalAmount: number = 0;
   productCode: string = '';
 
-  // Simulación de productos disponibles
-  availableProducts: { [key: string]: { name: string; price: number } } = {
-    'SUB001': { name: 'Sublimadora A4', price: 150.00 },
-    'SUB002': { name: 'Sublimadora A3', price: 250.00 },
-    'TINTA001': { name: 'Tinta Magenta', price: 25.00 },
-    'TINTA002': { name: 'Tinta Cian', price: 25.00 },
-    'PAPEL001': { name: 'Papel Transfer A4', price: 0.50 },
-    'PAPEL002': { name: 'Papel Transfer A3', price: 0.75 },
-    'PLOTTER001': { name: 'Plotter de Corte 24"', price: 350.00 },
-    'VINILO001': { name: 'Vinilo Adhesivo Blanco', price: 8.00 }
-  };
+  productSearched:{}={}
 
-  constructor(private notificationService: NotificationService) {}
+  constructor(private notificationService: NotificationService, private salesService: SalesService) {}
 
   searchProduct() {
     const code = this.productCode.trim().toUpperCase();
@@ -64,38 +55,37 @@ export class PendingModalComponent {
       return;
     }
 
-    const product = this.availableProducts[code];
-    
-    if (!product) {
-      this.notificationService.error(`Producto "${code}" no encontrado`, 'Producto no encontrado');
-      this.productCode = '';
-      return;
-    }
-
-    // Verificar si el producto ya existe
-    const existingProduct = this.products.find(p => p.code === code);
-    
-    if (existingProduct) {
-      existingProduct.quantity += 1;
-    } else {
-      this.products.push({
-        code: code,
-        name: product.name,
-        price: product.price,
-        quantity: 1
-      });
-    }
-
-    this.calculateTotal();
-    this.productCode = '';
-    this.notificationService.success(`${product.name} agregado`, 'Producto añadido');
+    this.salesService.postDatos('searchItemByUniqueCode', { codigo: code }).subscribe({
+      next: (response) => {
+        console.log('Producto encontrado:', response);
+        
+        // Verificar si el producto ya existe
+        const existingProduct = this.products.find(p => p.CODIGO === code);
+        
+        if (existingProduct) {
+          existingProduct.quantity += 1;
+        } else {
+          this.products.push({ ...response.producto, quantity: 1 });
+        }
+        
+        // Calcular total DESPUÉS de agregar el producto
+        this.calculateTotal();
+        // Limpiar el código DESPUÉS de procesar
+        this.productCode = '';
+      },
+      error: (error) => {
+        this.notificationService.error('Producto no encontrado', 'Error');
+        console.error('Error al buscar producto:', error);
+        this.productCode = '';
+      }
+    });
   }
 
   removeProduct(index: number) {
     const product = this.products[index];
     this.products.splice(index, 1);
     this.calculateTotal();
-    this.notificationService.info(`${product.name} eliminado`, 'Removido');
+    this.notificationService.info(`${product.NOMBRE} eliminado`, 'Removido');
   }
 
   updateQuantity(index: number, newQuantity: number) {
@@ -106,7 +96,7 @@ export class PendingModalComponent {
   }
 
   calculateTotal() {
-    const productsTotal = this.products.reduce((sum, p) => sum + (p.price * p.quantity), 0);
+    const productsTotal = this.products.reduce((sum, p) => sum + (p.PRECIO * p.quantity), 0);
     this.totalAmount = productsTotal;
   }
 
@@ -173,9 +163,7 @@ export class PendingModalComponent {
     this.close.emit();
   }
 
-  handleKeyPress(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
-      this.searchProduct();
-    }
+  handleKeyPress() {
+    this.searchProduct();
   }
 }

@@ -1,24 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, ChangeDetectorRef, NgZone, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NotificationService } from '../../services/notification.service';
 import { PendingModalComponent } from './pending-modal.component';
-
-interface PendingItem {
-  id: string;
-  client: string;
-  clientInitial: string;
-  title: string;
-  details: string;
-  amount: number;
-  cost: number;
-  status: 'pending' | 'in_process' | 'completed';
-  paymentMethod: 'cash' | 'card';
-  quantity: number;
-  date: string;
-}
-
-type FilterStatus = 'all' | 'pending' | 'in_process' | 'completed';
+import { SalesService } from '../../services/sales.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-pending',
@@ -28,167 +14,128 @@ type FilterStatus = 'all' | 'pending' | 'in_process' | 'completed';
   styleUrl: './pending.component.css'
 })
 export class PendingComponent implements OnInit {
-  pendingItems: PendingItem[] = [];
-  filteredItems: PendingItem[] = [];
-  currentFilter: FilterStatus = 'pending';
-  isLoading: boolean = false;
-  isModalOpen: boolean = false;
+  pendingItems: any[] = [];
+  filteredItems: any[] = [];
+  isLoading = false;
+  isModalOpen = false;
+  currentFilter = 5;
 
-  // Datos de ejemplo
-  mockData: PendingItem[] = [
-    {
-      id: '1',
-      client: 'Laurencin',
-      clientInitial: 'L',
-      title: '1 Poster con fotos de gato',
-      details: 'Detalles por whatsapp. Entrega a FORZA LUNES',
-      amount: 45.00,
-      cost: 0,
-      status: 'pending',
-      paymentMethod: 'cash',
-      quantity: 1,
-      date: '2026-02-12'
-    },
-    {
-      id: '2',
-      client: 'María García',
-      clientInitial: 'M',
-      title: '5 Tazas personalizadas',
-      details: 'Diseño personalizado con nombre. Entrega viernes',
-      amount: 125.00,
-      cost: 45.00,
-      status: 'in_process',
-      paymentMethod: 'card',
-      quantity: 5,
-      date: '2026-02-11'
-    },
-    {
-      id: '3',
-      client: 'Carlos López',
-      clientInitial: 'C',
-      title: '3 Camisetas sublimadas',
-      details: 'Color blanco, talla M, L, XL',
-      amount: 180.00,
-      cost: 65.00,
-      status: 'completed',
-      paymentMethod: 'card',
-      quantity: 3,
-      date: '2026-02-10'
-    },
-    {
-      id: '4',
-      client: 'Ana Rodríguez',
-      clientInitial: 'A',
-      title: 'Almohada con foto',
-      details: 'Foto familiar, entrega este fin de semana',
-      amount: 85.00,
-      cost: 30.00,
-      status: 'pending',
-      paymentMethod: 'cash',
-      quantity: 1,
-      date: '2026-02-12'
-    },
-    {
-      id: '5',
-      client: 'Pedro Morales',
-      clientInitial: 'P',
-      title: '10 Llaveros grabados',
-      details: 'Grabado personalizado con nombre/empresa',
-      amount: 150.00,
-      cost: 50.00,
-      status: 'in_process',
-      paymentMethod: 'cash',
-      quantity: 10,
-      date: '2026-02-09'
-    }
+  filterTabs = [
+    { key: 5, label: 'Todos', icon: 'pi-list', count: 0 },
+    { key: 1, label: 'Pendientes', icon: 'pi-hourglass', count: 0 },
+    { key: 2, label: 'En Proceso', icon: 'pi-spinner', count: 0 },
+    { key: 3, label: 'Realizados', icon: 'pi-check', count: 0 }
   ];
 
-  filterTabs: Array<{ key: FilterStatus; label: string; icon: string; count: number }> = [
-    { key: 'all', label: 'Todos', icon: 'pi-list', count: 0 },
-    { key: 'pending', label: 'Pendientes', icon: 'pi-hourglass', count: 0 },
-    { key: 'in_process', label: 'En Proceso', icon: 'pi-spinner', count: 0 },
-    { key: 'completed', label: 'Realizados', icon: 'pi-check', count: 0 }
-  ];
-
-  constructor(private notificationService: NotificationService) {}
+  constructor(
+    private notificationService: NotificationService,
+    private salesService: SalesService,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngOnInit() {
-    this.loadPendingItems();
+    this.applyFilter(1);
   }
 
   loadPendingItems() {
-    this.pendingItems = [...this.mockData];
-    this.updateFilterCounts();
-    this.applyFilter(this.currentFilter);
-  }
+    this.isLoading = true;
+    this.salesService.getDatosPendientes(1).subscribe({
+      next: (response) => {
+        console.log('Datos del backend:', response.resultado);
+     
+          this.pendingItems = response.resultado;
+          window.alert("Hola")
 
-  updateFilterCounts() {
-    this.filterTabs.forEach(tab => {
-      if (tab.key === 'all') {
-        tab.count = this.pendingItems.length;
-      } else {
-        const statusMap = {
-          'pending': 'pending',
-          'in_process': 'in_process',
-          'completed': 'completed'
-        };
-        tab.count = this.pendingItems.filter(item => item.status === statusMap[tab.key as keyof typeof statusMap]).length;
+        this.filteredItems = [...this.pendingItems];
+        this.updateFilterCounts();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error:', error);
+        this.notificationService.error('Error al cargar pendientes', 'Error');
+        this.isLoading = false;
       }
     });
   }
 
-  applyFilter(filter: string | FilterStatus) {
-    this.currentFilter = filter as FilterStatus;
+  updateFilterCounts() {
+    this.filterTabs[0].count = this.pendingItems.length;
+    this.filterTabs[1].count = this.pendingItems.filter(i => i.status === 1).length;
+    this.filterTabs[2].count = this.pendingItems.filter(i => i.status === 2).length;
+    this.filterTabs[3].count = this.pendingItems.filter(i => i.status === 3).length;
+  }
+
+  applyFilter(filter: number) {
+    this.currentFilter = filter;
+    this.isLoading = true;
     
-    if (filter === 'all') {
-      this.filteredItems = [...this.pendingItems];
-    } else {
-      const statusMap: { [key: string]: string } = {
-        'pending': 'pending',
-        'in_process': 'in_process',
-        'completed': 'completed'
-      };
-      this.filteredItems = this.pendingItems.filter(
-        item => item.status === statusMap[filter as string]
-      );
-    }
+    this.salesService.getDatosPendientes(filter).subscribe({
+      next: (response) => {
+        console.log('Datos del backend para filtro', filter, ':', response.resultado);
+        console.log('Primer item:', response.resultado[0]);
+        
+        // Usar NgZone para asegurar detección de cambios en SSR
+        this.ngZone.run(() => {
+          this.filteredItems = (response.resultado || []).map((item: any) => {
+            let mapped = {
+              id: item.ID_PENDIENTE?.toString() || '',
+              client: item.NOMBRE_CLIENTE || 'Sin nombre',
+              clientInitial: (item.NOMBRE_CLIENTE || 'X').charAt(0).toUpperCase(),
+              title: item.TITULO || 'Sin título',
+              details: item.DETALLE || 'Sin detalle',
+              amount: parseFloat(item.COBRO) || 0,
+              cost: parseFloat(item.GASTO) || 0,
+              quantity: 1,
+              status: item.ID_ESTADO_PENDIENTE || 1,
+              date: item.FECHA_APROX || item.FECHA_REGISTRO || 'Sin fecha',
+              clientPhone: item.NUMERO_TELEFONO || ''
+            };
+            console.log('Item mapeado:', mapped);
+            return mapped;
+          });
+          
+          console.log('Array final filteredItems:', this.filteredItems);
+          
+          // Para el conteo de tabs, solo usamos los datos del filtro "Todos" 
+          if (filter === 5) {
+            this.pendingItems = [...this.filteredItems];
+            this.updateFilterCounts();
+          }
+          
+          this.isLoading = false;
+          
+          // Solo detectar cambios si estamos en el browser
+          if (isPlatformBrowser(this.platformId)) {
+            this.cdr.detectChanges();
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Error:', error);
+        this.notificationService.error('Error al cargar pendientes', 'Error');
+        this.isLoading = false;
+      }
+    });
   }
 
-  getStatusLabel(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      'pending': 'Pendiente',
-      'in_process': 'En Proceso',
-      'completed': 'Realizado'
-    };
-    return statusMap[status] || status;
+  getStatusLabel(status: number): string {
+    return status === 1 ? 'Pendiente' : status === 2 ? 'En Proceso' : 'Realizado';
   }
 
-  getPaymentMethodLabel(method: string): string {
-    return method === 'cash' ? 'Efectivo' : 'Tarjeta';
-  }
-
-  updateStatus(item: PendingItem, newStatus: 'pending' | 'in_process' | 'completed') {
-    item.status = newStatus;
-    this.updateFilterCounts();
-    this.applyFilter(this.currentFilter);
-    this.notificationService.success(`Estado actualizado a: ${this.getStatusLabel(newStatus)}`, 'Actualizado');
-  }
-
-  updateQuantity(item: PendingItem, newQuantity: number) {
-    if (newQuantity > 0) {
-      item.quantity = newQuantity;
-      this.notificationService.info(`Cantidad actualizada a ${newQuantity}`, 'Actualizado');
-    }
-  }
-
-  deletePending(item: PendingItem) {
-    const index = this.pendingItems.indexOf(item);
-    if (index > -1) {
-      this.pendingItems.splice(index, 1);
-      this.updateFilterCounts();
-      this.applyFilter(this.currentFilter);
-      this.notificationService.success('Pendiente eliminado', 'Eliminado');
-    }
+  updateStatus(item: any, newStatus: number) {
+    this.salesService.getDatosPendientes(newStatus).subscribe({
+      next: () => {
+        this.notificationService.success('Estado actualizado', 'Actualizado');
+        this.applyFilter(this.currentFilter);
+      },
+      error: (error) => {
+        console.error('Error:', error);
+        this.notificationService.error('Error al actualizar', 'Error');
+      }
+    });
   }
 
   addNewPending() {
@@ -200,25 +147,28 @@ export class PendingComponent implements OnInit {
   }
 
   onSaveNewPending(data: any) {
-    // Crear un nuevo pendiente desde los datos del modal
-    const newPending: PendingItem = {
-      id: Date.now().toString(),
-      client: data.clientName,
-      clientInitial: data.clientName.charAt(0).toUpperCase(),
-      title: data.title,
-      details: `${data.products.length} producto(s). ${data.observations || ''}`,
-      amount: data.totalAmount,
-      cost: 0, // Se puede calcular si es necesario
-      status: 'pending',
-      paymentMethod: 'cash',
-      quantity: data.products.length,
-      date: data.deliveryDate
-    };
-
-    this.pendingItems.unshift(newPending);
-    this.updateFilterCounts();
-    this.applyFilter(this.currentFilter);
-    this.notificationService.success(`Pendiente de "${data.clientName}" creado exitosamente`, 'Nuevo Pendiente');
+    const userId = this.authService.getCurrentUser()?.id || 0;
+    
+    this.salesService.postDatosPendientes({
+      numeroCliente: data.clientPhone,
+      nombreCliente: data.clientName,
+      titulo: data.title,
+      detalle: data.observations || '',
+      cobro: data.totalAmount,
+      fechaEntrega: data.deliveryDate,
+      id_estado_pendiente: 1,
+      productos: JSON.stringify(data.products),
+      idUsuario: userId
+    }).subscribe({
+      next: () => {
+        this.notificationService.success('Pendiente creado', 'Nuevo Pendiente');
+        this.loadPendingItems();
+      },
+      error: (error) => {
+        console.error('Error:', error);
+        this.notificationService.error('Error al guardar', 'Error');
+      }
+    });
   }
 
   getTotalAmount(): number {
@@ -231,5 +181,17 @@ export class PendingComponent implements OnInit {
 
   getTotalProfit(): number {
     return this.getTotalAmount() - this.getTotalCost();
+  }
+
+  getPaymentMethodLabel(method: string): string {
+    return 'Efectivo';
+  }
+
+  updateQuantity(item: any, newQuantity: number) {
+    // No hacer nada
+  }
+
+  deletePending(item: any) {
+    // No hacer nada
   }
 }

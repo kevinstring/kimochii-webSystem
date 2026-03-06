@@ -1,123 +1,93 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { SalesService } from '../../services/sales.service';
+import { AuthService } from '../../services/auth.service';
 
 interface SalesHistoryItem {
-  id: string;
-  date: string;
-  time: string;
-  userId: string;
-  userName: string;
-  items: number;
-  total: number;
+  ID_INGRESO: number;
+  MOTIVO: string;
+  // Agregamos más campos según lo que recibas del backend
 }
 
 @Component({
   selector: 'app-sales-history',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './sales-history.component.html',
   styleUrl: './sales-history.component.css'
 })
 export class SalesHistoryComponent implements OnInit {
   sales: SalesHistoryItem[] = [];
-  filterPeriod: 'today' | 'week' | 'month' | 'all' = 'all';
+  filterPeriod: number = 1; // 1 = Hoy, 2 = Semana, 3 = Mes, 4 = Todo
+  totalBanco: number = 0;
+  totalCaja: number = 0;
+  isLoading: boolean = false;
 
-  filterOptions: Array<{ value: 'today' | 'week' | 'month' | 'all'; label: string }> = [
-    { value: 'today', label: 'Hoy' },
-    { value: 'week', label: 'Esta Semana' },
-    { value: 'month', label: 'Este Mes' },
-    { value: 'all', label: 'Todo' }
+  filterOptions: Array<{ value: number; label: string }> = [
+    { value: 1, label: 'Hoy' },
+    { value: 2, label: 'Esta Semana' },
+    { value: 3, label: 'Este Mes' },
+    { value: 4, label: 'Todo' }
   ];
 
-  constructor() {}
+  constructor(
+    private salesService: SalesService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
-    this.loadSales();
+    this.loadSales(1); // Cargar por defecto el período "Hoy"
   }
 
-  loadSales() {
-    // Datos simulados - se reemplazará con llamada a API del backend
-    this.sales = [
-      {
-        id: 'VTA001',
-        date: '2025-02-11',
-        time: '14:30',
-        userId: 'USR001',
-        userName: 'Carlos',
-        items: 5,
-        total: 2450.00
-      },
-      {
-        id: 'VTA002',
-        date: '2025-02-11',
-        time: '13:15',
-        userId: 'USR002',
-        userName: 'María',
-        items: 3,
-        total: 890.50
-      },
-      {
-        id: 'VTA003',
-        date: '2025-02-10',
-        time: '16:45',
-        userId: 'USR001',
-        userName: 'Carlos',
-        items: 8,
-        total: 3210.75
-      },
-      {
-        id: 'VTA004',
-        date: '2025-02-09',
-        time: '11:00',
-        userId: 'USR003',
-        userName: 'Juan',
-        items: 2,
-        total: 450.00
-      },
-      {
-        id: 'VTA005',
-        date: '2025-02-08',
-        time: '15:20',
-        userId: 'USR002',
-        userName: 'María',
-        items: 6,
-        total: 1875.25
-      }
-    ];
-  }
+  loadSales(filterPeriod:number) {
+    this.filterPeriod=filterPeriod;
 
-  getFilteredSales(): SalesHistoryItem[] {
-    const today = new Date();
-    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-    return this.sales.filter(sale => {
-      const saleDate = new Date(sale.date);
-
-      switch (this.filterPeriod) {
-        case 'today':
-          return saleDate.toDateString() === today.toDateString();
-        case 'week':
-          return saleDate >= weekAgo;
-        case 'month':
-          return saleDate >= monthAgo;
-        case 'all':
-        default:
-          return true;
-      }
+    this.isLoading = true;
+    
+    this.salesService.getHistorialVentas(this.filterPeriod,1).subscribe({
+      next: (response) => {
+        if (response.success==true) {
+          console.log('Respuesta del backend:', response);
+          this.sales = response.registros;
+          this.totalBanco = response.totalBanco;
+          this.totalCaja = response.totalCaja;
+                  this.isLoading = false;
+        } else {
+          console.error('Error al cargar historial:');
+          this.isLoading = false;
+              
+        }
+      },
+      error: (error) => {
+        console.error('Error al cargar historial:', error);
+        this.isLoading = false;
+      },
+      complete: () => { 
+        this.isLoading = false;
+               console.log('Carga de historial de ventas completada');
+      } 
     });
   }
 
+  onFilterChange(filterPeriod: number) {
+    console.log('Período seleccionado:', filterPeriod);
+    this.loadSales(filterPeriod);
+  }
+
   getTotalSales(): number {
-    return this.getFilteredSales().reduce((sum, sale) => sum + sale.total, 0);
+    return this.totalCaja + this.totalBanco;
   }
 
   getTotalTransactions(): number {
-    return this.getFilteredSales().length;
+    return this.sales.length;
   }
 
   getTotalItems(): number {
-    return this.getFilteredSales().reduce((sum, sale) => sum + sale.items, 0);
+    // Esto depende de cómo viene la información de items en cada registro
+    // Por ahora retornamos 0, se puede ajustar según la estructura real
+    return 0;
   }
 }

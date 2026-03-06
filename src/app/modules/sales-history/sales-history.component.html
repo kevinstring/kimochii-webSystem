@@ -7,18 +7,26 @@
       <label>Filtrar por período:</label>
       <div class="filter-buttons">
         <button 
-          *ngFor="let option of filterOptions"
-          [class.active]="filterPeriod === option.value"
-          (click)="filterPeriod = option.value"
-          class="filter-btn">
+          *ngFor="let option of filterOptions; let i = index"
+          (click)=" onFilterChange(option.value)"
+          class="filter-btn"
+         >
           {{ option.label }}
         </button>
       </div>
     </div>
   </div>
-
+{{totalCaja}}
   <!-- Summary Stats -->
   <div class="summary-stats">
+    <div class="stat">
+      <p class="stat-label">Total Caja</p>
+      <p class="stat-value">Q{{ totalCaja.toFixed(2) }}</p>
+    </div>
+    <div class="stat">
+      <p class="stat-label">Total Banco</p>
+      <p class="stat-value">Q{{ totalBanco.toFixed(2) }}</p>
+    </div>
     <div class="stat">
       <p class="stat-label">Total Ventas</p>
       <p class="stat-value">Q{{ getTotalSales().toFixed(2) }}</p>
@@ -27,46 +35,33 @@
       <p class="stat-label">Transacciones</p>
       <p class="stat-value">{{ getTotalTransactions() }}</p>
     </div>
-    <div class="stat">
-      <p class="stat-label">Productos Vendidos</p>
-      <p class="stat-value">{{ getTotalItems() }}</p>
-    </div>
-    <div class="stat">
-      <p class="stat-label">Promedio por Venta</p>
-      <p class="stat-value">Q{{ (getTotalTransactions() > 0 ? getTotalSales() / getTotalTransactions() : 0).toFixed(2) }}</p>
-    </div>
   </div>
 
   <!-- Sales Table -->
-  <div class="table-section" *ngIf="getFilteredSales().length > 0">
+  <div class="table-section" >
     <table class="sales-table">
       <thead>
         <tr>
           <th>ID Venta</th>
-          <th>Fecha</th>
-          <th>Hora</th>
-          <th>Usuario</th>
-          <th>Productos</th>
-          <th>Total</th>
+          <th>Detalle</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let sale of getFilteredSales()">
-          <td class="sale-id">{{ sale.id }}</td>
-          <td>{{ sale.date }}</td>
-          <td>{{ sale.time }}</td>
-          <td>
-            <span class="user-badge">{{ sale.userName }}</span>
-          </td>
-          <td class="items-count">{{ sale.items }}</td>
-          <td class="total-amount">Q{{ sale.total.toFixed(2) }}</td>
+        <tr *ngFor="let sale of sales">
+          <td class="sale-id">{{ sale.ID_INGRESO }}</td>
+          <td>{{ sale.MOTIVO }}</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <div class="empty-state" *ngIf="getFilteredSales().length === 0">
+  <div class="empty-state" *ngIf="!isLoading && sales.length === 0">
     <i class="pi pi-inbox"></i>
     <p>No hay ventas en este período</p>
   </div>
+
+  <!-- <div class="empty-state" *ngIf="isLoading">
+    <i class="pi pi-spin pi-spinner"></i>
+    <p>Cargando historial...</p>
+  </div> -->
 </div>

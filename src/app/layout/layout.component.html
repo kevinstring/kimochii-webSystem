@@ -8,7 +8,7 @@
       <h1 class="navbar-title">Kimochii - Control de Inventario</h1>
       <div class="navbar-spacer"></div>
       <div class="user-section" *ngIf="currentUser$ | async as user">
-        <span class="user-name">{{ user.name }}</span>
+        <span class="user-name">{{ user.nickname }}</span>
         <button class="logout-btn" (click)="logout()" title="Cerrar sesión">
           <i class="pi pi-sign-out"></i>
         </button>

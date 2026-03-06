@@ -74,9 +74,7 @@
             <th class="col-status">
               <i class="pi pi-check-circle"></i> Estado
             </th>
-            <th class="col-qty">
-              <i class="pi pi-hashtag"></i> Cant.
-            </th>
+
             <th class="col-actions">Acciones</th>
           </tr>
         </thead>
@@ -86,59 +84,44 @@
             <td class="col-client">
               <div class="client-info">
                 <div class="client-avatar">{{ item.clientInitial }}</div>
-                <span>{{ item.client }}</span>
+                <span>{{ item.NOMBRE_CLIENTE }}</span>
               </div>
             </td>
 
             <!-- Título -->
             <td class="col-title">
-              <strong>{{ item.title }}</strong>
+              <strong>{{ item.TITULO }}</strong>
             </td>
 
             <!-- Detalle -->
             <td class="col-details">
-              <small>{{ item.details }}</small>
+              <small>{{ item.DETALLE }}</small>
             </td>
 
             <!-- Cobro -->
             <td class="col-amount">
-              <div class="amount-box">Q{{ item.amount.toFixed(2) }}</div>
+              <div class="amount-box">Q{{ item.COBRO }}</div>
             </td>
 
             <!-- Gasto -->
             <td class="col-cost">
-              <span class="cost-value">Q{{ item.cost.toFixed(2) }}</span>
+              <span class="cost-value">Q{{ item.GASTO }}</span>
             </td>
 
             <!-- Estado -->
             <td class="col-status">
               <div class="status-selector">
                 <select 
-                  [(ngModel)]="item.status"
-                  (change)="updateStatus(item, item.status)"
+                  [(ngModel)]="item.ID_ESTADO_PENDIENTE"
+                  (change)="updateStatus(item, item.ID_ESTADO_PENDIENTE)"
                   class="status-select">
-                  <option value="pending">Pendiente</option>
-                  <option value="in_process">En Proceso</option>
-                  <option value="completed">Realizado</option>
+                  <option [value]="1">Pendiente</option>
+                  <option [value]="2">En Proceso</option>
+                  <option [value]="3">Realizado</option>
                 </select>
-                <div class="status-badge" [ngClass]="'status-' + item.status">
-                  {{ getPaymentMethodLabel(item.paymentMethod) }}
-                </div>
               </div>
             </td>
 
-            <!-- Cantidad -->
-            <td class="col-qty">
-              <div class="qty-input-group">
-                <button class="qty-btn">Q</button>
-                <input 
-                  type="number" 
-                  [(ngModel)]="item.quantity"
-                  (change)="updateQuantity(item, item.quantity)"
-                  min="1"
-                  class="qty-input">
-              </div>
-            </td>
 
             <!-- Acciones -->
             <td class="col-actions">

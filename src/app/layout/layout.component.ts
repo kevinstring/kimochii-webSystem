@@ -89,7 +89,7 @@ export class LayoutComponent implements OnInit {
   logout() {
     const user = this.authService.getCurrentUser();
     this.authService.logout();
-    this.notificationService.info(`¡Hasta luego, ${user?.name}!`, 'Sesión cerrada');
+    this.notificationService.info(`¡Hasta luego, ${user?.nickname}!`, 'Sesión cerrada');
     this.router.navigate(['/login']);
   }
 }

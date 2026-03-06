@@ -12,10 +12,22 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   canActivate(): boolean {
-    if (this.authService.isAuthenticated()) {
-      return true;
+    // Verificar autenticación (la sesión ya fue restaurada en App)
+    const isAuth = this.authService.isAuthenticated();
+    
+    // Fallback: verificar localStorage directamente
+    if (!isAuth && typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      const usuarioComprobado = localStorage.getItem('usuarioComprobado');
+      if (usuarioComprobado === '1') {
+        return true;
+      }
     }
-    this.router.navigate(['/login']);
-    return false;
+    
+    if (!isAuth) {
+      this.router.navigate(['/login']);
+      return false;
+    }
+    
+    return true;
   }
 }

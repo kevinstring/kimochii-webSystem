@@ -1,21 +1,63 @@
 <div class="sales-container">
   <h1>Registrar Venta</h1>
 
-  <div class="form-section">
-    <div class="form-card">
-      <h2>Ingresa Código de Producto</h2>
+  <!-- Configuración de Venta -->
+
+
+  <div style="margin-top: -5px;">
+    <div class="form-card" >
       
-      <div class="form-row">
-        <div class="form-group search-group">
+      <div class="form-row" style=" display: flex; flex-direction: row; justify-content: center; align-items: flex-start;">
+        <div >
           <label>Código de Producto</label>
           <input 
             type="text" 
-            [(ngModel)]="productCode"
+        
             (keyup.enter)="searchProduct()"
-            placeholder="Ej: SUB001"
+            placeholder="Ej: PER-SUB-774"
             class="form-input"
-            autofocus>
-          <small class="hint">Presiona ENTER para agregar</small>
+                [(ngModel)]="productCode"
+            >
+          <small class="hint" *ngIf="!isSearching">Presiona ENTER o cambia de campo para agregar</small>
+          <small class="hint" *ngIf="isSearching" style="color: #667eea;">
+            <i class="pi pi-spin pi-spinner"></i> Buscando producto...
+          </small>
+        </div>
+
+        <div style="max-width: 180px;">
+          <label>Tipo de Pago</label>
+          <select [(ngModel)]="tipoPago" (change)="onTipoPagoChange()" class="payment-select">
+            <option [ngValue]="1">Efectivo</option>
+            <option [ngValue]="2">Tarjeta</option>
+            <option [ngValue]="3">Mixto</option>
+          </select>
+        </div>
+      </div>
+
+      <div *ngIf="tipoPago === 3" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem;">
+        <div class="form-group">
+          <label>Monto Efectivo</label>
+          <input 
+            type="number" 
+            [(ngModel)]="montoEfectivo"
+            (change)="updateMontoEfectivo()"
+            step="0.01"
+            min="0"
+            class="form-input"
+            placeholder="Q0.00">
+        </div>
+
+        <div class="form-group">
+          <label>Monto Tarjeta</label>
+          <input 
+            type="number" 
+            [(ngModel)]="montoBanco"
+            (change)="updateMontoBanco()"
+            step="0.01"
+            min="0"
+            class="form-input"
+            placeholder="Q0.00">
+          <small class="hint">Total a pagar: Q{{ totalSale.toFixed(2) }}</small>
         </div>
       </div>
 
@@ -23,9 +65,10 @@
         <i class="pi pi-exclamation-circle"></i> {{ errorMessage }}
       </div>
     </div>
+
   </div>
 
-  <div class="table-section" *ngIf="salesItems.length > 0">
+  <div class="table-section">
     <table class="sales-table">
       <thead>
         <tr>
@@ -62,23 +105,24 @@
 
     <div class="total-payment-row">
       <div class="total-summary">
-        <h3>Total Venta: <span>Q{{ totalSale.toFixed(2) }}</span></h3>
-      </div>
-
-      <div class="payment-method-section">
-        <label>Método de Pago</label>
-        <select [(ngModel)]="paymentMethod" class="payment-select">
-          <option *ngFor="let method of paymentMethods" [value]="method.id">
-            {{ method.label }}
-          </option>
-        </select>
+        <div class="total-line">
+          <span>Subtotal</span>
+          <strong>Q{{ totalSale.toFixed(2) }}</strong>
+        </div>
+        <div class="total-line total-line-final">
+          <span>Total</span>
+          <strong>Q{{ totalSale.toFixed(2) }}</strong>
+        </div>
       </div>
     </div>
 
-    <button (click)="completeSale()" class="btn-complete" [disabled]="isLoading">
-      <i class="pi" [ngClass]="isLoading ? 'pi-spin pi-spinner' : 'pi-check'"></i>
-      {{ isLoading ? 'Procesando...' : 'Completar Venta' }}
-    </button>
+    <div class="complete-action">
+      <button (click)="completeSale()" class="btn-complete" [disabled]="isLoading || salesItems.length === 0">
+        <i class="pi" [ngClass]="isLoading ? 'pi-spin pi-spinner' : 'pi-check'"></i>
+        {{ isLoading ? 'Procesando...' : 'Completar Venta' }}
+      </button>
+    </div>
+
   </div>
 
   <div class="empty-state" *ngIf="salesItems.length === 0">

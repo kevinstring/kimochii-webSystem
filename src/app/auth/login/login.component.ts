@@ -13,9 +13,10 @@ import { NotificationService } from '../../services/notification.service';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  userId: string = '';
-  name: string = '';
+  nickname: string = '';
+  password: string = '';
   errorMessage: string = '';
+  isLoading: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -26,15 +27,26 @@ export class LoginComponent {
   handleLogin() {
     this.errorMessage = '';
 
-    if (!this.userId.trim() || !this.name.trim()) {
+    if (!this.nickname.trim() || !this.password.trim()) {
       this.errorMessage = 'Por favor completa todos los campos';
-      this.notificationService.warning(this.errorMessage, 'Validación');
       return;
     }
 
-    this.authService.login(this.userId, this.name);
-    this.notificationService.success(`¡Bienvenido, ${this.name}!`, 'Sesión iniciada');
-    this.router.navigate(['/dashboard']);
+    this.isLoading = true;
+    
+    this.authService.login(this.nickname, this.password).subscribe({
+      next: (user) => {
+        this.isLoading = false;
+        this.router.navigate(['/dashboard']);
+      },
+      error: (error) => {
+        this.isLoading = false;
+        const errorMsg = error?.error?.mensaje || error?.error?.error || 'Usuario o contraseña incorrectos';
+        setTimeout(() => {
+          this.errorMessage = errorMsg;
+        }, 0);
+      }
+    });
   }
 
   handleKeyPress(event: KeyboardEvent) {
